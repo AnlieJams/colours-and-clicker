@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Timers;
 
-namespace WinForms12
+namespace WinFormsApp12
 {
     public partial class Form1 : Form
     {
