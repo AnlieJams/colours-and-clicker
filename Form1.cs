@@ -1,73 +1,60 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Timers;
 
-
-namespace WinFormsApp13
+namespace WinForms12
 {
     public partial class Form1 : Form
     {
-        private int clickCount = 0;
-        private int maxClicks = 0;
-        private int timeLeft = 20;
-        private Timer gameTimer;
+        private Color[] colors = { Color.Red, Color.Yellow, Color.Green, Color.Cyan, Color.Blue, Color.Pink, Color.White, Color.Black };
+        private int currentColorIndex = 0;
+
+        private System.Timers.Timer colorChangeTimer;
 
         public Form1()
         {
             InitializeComponent();
-            InitializeGame();
+            InitializeTimer();
+            panel1.BackColor = colors[currentColorIndex];
         }
 
-        private void InitializeGame()
+        private void InitializeTimer()
         {
-
-            gameTimer = new Timer();
-            gameTimer.Interval = 1000;
-            gameTimer.Tick += OnGameTimerTick;
-
-            
-            button1.Text = "Чё сидишь, тыкай";
-            button1.Click += OnButtonClick;
-
-            
-            gameTimer.Start();
+            colorChangeTimer = new System.Timers.Timer();
+            colorChangeTimer.Interval = 2000; 
+            colorChangeTimer.Elapsed += OnColorChangeTimerElapsed;
+            colorChangeTimer.Start();
         }
 
-        private void OnGameTimerTick(object sender, EventArgs e)
+        private void OnColorChangeTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            timeLeft--;
+            ChangeBackgroundColor();
+        }
 
-            if (timeLeft <= 0)
+        private void ChangeBackgroundColor()
+        {
+            if (currentColorIndex < colors.Length - 1)
             {
-                gameTimer.Stop();
-                ShowResult();
+                currentColorIndex++;
             }
-        }
-
-        private void OnButtonClick(object sender, EventArgs e)
-        {
-            clickCount++;
-
-            if (clickCount > maxClicks)
+            else
             {
-                maxClicks = clickCount;
+                currentColorIndex = 0;
             }
 
-            
-            button1.Text = $"Кликов: {clickCount}";
+            Color nextColor = colors[currentColorIndex];
+
+           
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => { panel1.BackColor = nextColor; }));
+            }
+            else
+            {
+                panel1.BackColor = nextColor;
+            }
         }
-
-        private void ShowResult()
-        {
-            string message = $"Ну шо, ты сделал {clickCount} кликов.\nМаксимальный рекорд: {maxClicks}";
-            MessageBox.Show(message, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            
-            clickCount = 0;
-            timeLeft = 20;
-            button1.Text = "Тыкай на меня";
-            gameTimer.Start();
-        }
-
     }
 }
+
